@@ -1,0 +1,16 @@
+{
+  "name": "multi-tenant-architecture",
+  "version": "1.0.0",
+  "description": "\"Multi-tenant architecture practice\"",
+  "main": "index.js",
+  "scripts": {
+   "start": "node --watch app.js"
+  },
+  "author": "Bhairab Nath",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "mysql2": "^3.14.3",
+    "sequelize": "^6.37.7"
+  }
+}
