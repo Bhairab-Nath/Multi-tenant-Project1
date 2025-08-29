@@ -30,6 +30,7 @@ exports.loginUser = async(req,res)=>{
         const isPasswordAlsoMatched = bcrypt.compareSync(password,doesUserExistOfEmail[0].password)
         if(isPasswordAlsoMatched){
             const token = jwt.sign({id: doesUserExistOfEmail[0].id}, process.env.secretKey)
+            res.cookie('token',token)
             res.status(200).json({
                 message: "User logged in success",
                 token 
