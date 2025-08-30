@@ -52,7 +52,6 @@ exports.createBlogTable = async(req,res)=>{
         title VARCHAR(255),
         subtitle VARCHAR(255),
         description TEXT,
-        image VARCHAR(255),
         createdBy INT REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
         
         )`,{
@@ -67,7 +66,24 @@ exports.createBlogTable = async(req,res)=>{
 
 }
 
+exports.createBlog = async(req,res)=>{
+    const {title,subtitle,description} = req.body
+    const userId = req.userId
+    const orgNo = req.currentOrganizationNumber
+    if(orgNo === null || orgNo === undefined){
+        return res.status(400).json({
+            message: "There is no organization"
+        })
+    }
+    await sequelize.query(`INSERT INTO blog_${orgNo}(title,subtitle,description,createdBy) VALUES(?,?,?,?)`,{
+        type: QueryTypes.INSERT,
+        replacements :[title,subtitle,description,userId]
+    })
 
+    res.status(200).json({
+        message: "Blog added successfully"
+    })
+}
 
 exports.deleteUser = async(req,res)=>{
 const userId = req.userId
