@@ -1,8 +1,8 @@
 const { QueryTypes } = require("sequelize")
-const { sequelize } = require("../model")
+const { sequelize, users } = require("../model")
 
 
-exports.createOrganization = async(req,res)=>{
+exports.createOrganization = async(req,res,next)=>{
     const {name,address,email,number} = req.body
     const userId = req.userId
     const OrganizationNumber = Math.floor(1000 + Math.random()*9000)
@@ -17,6 +17,10 @@ exports.createOrganization = async(req,res)=>{
         )`,{
             type : QueryTypes.CREATE
     })
+
+    const userData = await users.findByPk(userId)
+    userData.currentOrganizationNumber = OrganizationNumber
+    await userData.save()
 
     await sequelize.query(`CREATE TABLE IF NOT EXISTS userHistory_${userId}(
         organizationNumber INT
@@ -35,12 +39,35 @@ exports.createOrganization = async(req,res)=>{
         replacements: [OrganizationNumber]
     })
 
-    res.status(200).json({
-            message: "Organization Created successfully.",
-            orgNo: OrganizationNumber
-    })
+    req.userId = userId
+    req.OrganizationNumber = OrganizationNumber
+    next()
 
 }
+
+exports.createBlogTable = async(req,res)=>{
+    const OrganizationNumber = req.OrganizationNumber
+    await sequelize.query(`CREATE TABLE IF NOT EXISTS blog_${OrganizationNumber}(
+        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255),
+        subtitle VARCHAR(255),
+        description TEXT,
+        image VARCHAR(255),
+        createdBy INT REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
+        
+        )`,{
+        type: QueryTypes.CREATE 
+    })
+
+    res.status(200).json({
+        message: "User created successfully.",
+        orgNo: OrganizationNumber
+    })
+
+
+}
+
+
 
 exports.deleteUser = async(req,res)=>{
 const userId = req.userId
