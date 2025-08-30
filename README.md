@@ -59,7 +59,7 @@ npm install
 ### 4. Configure Environment
 -Create a .env file in the project root
 -Add the following variables:
--secretKey ( for JWT )
+secretKey ( for JWT )
 
 ### 5. Test APIs
 -Use Postman (or any API client) to test:
